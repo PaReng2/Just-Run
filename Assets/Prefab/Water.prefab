@@ -50,7 +50,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   hp: 0
   dropCount: 1
-  minable: 1
+  minable: 0
 --- !u!1001 &8945298955268074150
 PrefabInstance:
   m_ObjectHideFlags: 0
