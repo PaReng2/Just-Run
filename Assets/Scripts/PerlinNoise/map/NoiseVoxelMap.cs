@@ -96,15 +96,7 @@ public class NoiseVoxelMap : MonoBehaviour
         b.dropCount = 1;
         b.minable = true;
 
-        if (spawnedButtonCount < 3 && Random.Range(0, 100) < buttonSpawnChance)
-        {
-            // 잔디 위에 생성해야 하므로 y + 1 좌표를 사용
-            var btn = Instantiate(Button, new Vector3(x, y + 1, z), Quaternion.identity);
-            btn.name = $"Button_{spawnedButtonCount}";
-
-            // 생성 개수 증가
-            spawnedButtonCount++;
-        }
+        
     }
 
     private void SetDirt(int x, int y, int z)

@@ -1544,7 +1544,7 @@ MonoBehaviour:
   depth: 20
   maxHeight: 16
   waterHeight: 5
-  buttonSpawnChance: 24
+  buttonSpawnChance: 1
   noiseScale: 5
 --- !u!4 &1754223020
 Transform:
