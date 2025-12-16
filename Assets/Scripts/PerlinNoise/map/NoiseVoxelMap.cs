@@ -4,25 +4,29 @@ using UnityEngine;
 
 public class NoiseVoxelMap : MonoBehaviour
 {
+    [Header("Block Prefabs")]
     public GameObject dirt;
     public GameObject Water;
-    public GameObject Gress;
+    public GameObject Grass; // Gress -> Grass 오타 수정
     public GameObject gold;
 
+    [Header("Map Settings")]
     public int width = 20;
     public int depth = 20;
     public int maxHeight = 16;
-    
-
-    private int dirtHeight;
     public int waterHeight = 5;
 
+    [Header("Generation Settings")]
     [SerializeField] private float noiseScale = 20f;
+    [Range(0, 100)] public int goldChance = 10; // 금 생성 확률 변수 추가
 
-    
     void Start()
     {
-        dirtHeight = maxHeight - 1;
+        GenerateMap();
+    }
+
+    void GenerateMap()
+    {
         float offsetX = Random.Range(-9999f, 9999f);
         float offsetZ = Random.Range(-9999f, 9999f);
 
@@ -30,41 +34,37 @@ public class NoiseVoxelMap : MonoBehaviour
         {
             for (int z = 0; z < depth; z++)
             {
+                // 노이즈 계산
                 float nx = (x + offsetX) / noiseScale;
                 float nz = (z + offsetZ) / noiseScale;
-
                 float noise = Mathf.PerlinNoise(nx, nz);
-
                 int h = Mathf.FloorToInt(noise * maxHeight);
-
 
                 if (h <= 0) continue;
 
+                // 지형 생성 (땅, 잔디)
                 for (int y = 0; y <= h; y++)
                 {
                     if (y == h)
                     {
+                        // 물 높이보다 낮으면 모래나 흙이 더 자연스럽지만, 일단 기존 로직대로 잔디 배치
                         SetGrass(x, y, z);
-
                     }
                     else
                     {
                         SetDirt(x, y, z);
                     }
-                    
-                    
                 }
+
+                // 물 생성 (지형 위부터 수면까지)
                 for (int wh = h + 1; wh <= waterHeight; wh++)
                 {
-                    if (waterHeight >= wh)
-                    {
-                        SetWater(x, wh, z);
-                    }
+                    SetWater(x, wh, z);
                 }
-                
             }
         }
     }
+
     public void PlaceTile(Vector3Int pos, ItemType type)
     {
         switch (type)
@@ -76,69 +76,56 @@ public class NoiseVoxelMap : MonoBehaviour
                 SetGrass(pos.x, pos.y, pos.z);
                 break;
             case ItemType.Gold:
-                SetGrass(pos.x, pos.y, pos.z);
+                SetGold(pos.x, pos.y, pos.z); // [버그 수정] SetGrass -> SetGold
                 break;
         }
     }
 
     private void SetGrass(int x, int y, int z)
     {
-        var go = Instantiate(Gress, new Vector3(x, y, z), Quaternion.identity);
-        go.name = $"B_{x}_{y}_{z}_G";
-
-        var b = go.GetComponent<Block>() ?? go.AddComponent<Block>();
-        b.type = ItemType.Grass;
-        b.maxHp = 3;
-        b.dropCount = 1;
-        b.minable = true;
-
-        
+        CreateBlock(Grass, x, y, z, ItemType.Grass, "G", 3);
     }
 
     private void SetDirt(int x, int y, int z)
     {
-        int goldPercent = Random.Range(0, 100);
-        if (goldPercent <= 40)
+        // 0~100 사이 난수 발생
+        int randomValue = Random.Range(0, 100);
+
+        // goldChance 보다 작으면 금 생성
+        if (randomValue < goldChance)
         {
             SetGold(x, y, z);
         }
         else
         {
-            var go = Instantiate(dirt, new Vector3(x, y, z), Quaternion.identity);
-            go.name = $"B_{x}_{y}_{z}_D";
-
-            var b = go.GetComponent<Block>() ?? go.AddComponent<Block>();
-            b.type = ItemType.Dirt;
-            b.maxHp = 3;
-            b.dropCount = 1;
-            b.minable = true;
+            CreateBlock(dirt, x, y, z, ItemType.Dirt, "D", 3);
         }
-
     }
 
     private void SetWater(int x, int y, int z)
     {
+        // 물은 Block 컴포넌트 설정이 없어서 따로 Instantiate
         var go = Instantiate(Water, new Vector3(x, y, z), Quaternion.identity);
         go.name = $"B_{x}_{y}_{z}_W";
-
-        
+        go.transform.SetParent(this.transform); // 하이어라키 정리
     }
 
     private void SetGold(int x, int y, int z)
     {
-        var go = Instantiate(gold, new Vector3(x, y, z), Quaternion.identity);
-        go.name = $"B_{x}_{y}_{z}_G";
-
-        var b = go.GetComponent<Block>() ?? go.AddComponent<Block>();
-        b.type = ItemType.Gold;
-        b.maxHp = 5;
-        b.dropCount = 1;
-        b.minable = true;
+        CreateBlock(gold, x, y, z, ItemType.Gold, "Gold", 5);
     }
 
-    
-    void Update()
+    // [코드 중복 제거] 블록 생성 헬퍼 함수
+    private void CreateBlock(GameObject prefab, int x, int y, int z, ItemType type, string suffix, int hp)
     {
-        
+        var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+        go.name = $"B_{x}_{y}_{z}_{suffix}";
+        go.transform.SetParent(this.transform); // 부모 설정으로 하이어라키 정리
+
+        var b = go.GetComponent<Block>() ?? go.AddComponent<Block>();
+        b.type = type;
+        b.maxHp = hp;
+        b.dropCount = 1;
+        b.minable = true;
     }
 }

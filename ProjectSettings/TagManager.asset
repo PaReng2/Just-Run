@@ -7,6 +7,8 @@ TagManager:
   - Block
   - Item
   - pushButton
+  - water
+  - die
   layers:
   - Default
   - TransparentFX

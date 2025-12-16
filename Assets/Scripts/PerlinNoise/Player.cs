@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
     public float gravity = -9.81f;
     public float mouseSensitivity = 3f;
 
+    GameManager gameManager;
+
     float xRotation = 0f;
     CharacterController controller;
     Transform cam;
@@ -16,6 +18,7 @@ public class Player : MonoBehaviour
     bool isGrounded;
     void Awake()
     {
+        gameManager = FindAnyObjectByType<GameManager>();
         controller = GetComponent<CharacterController>();
         if (cam == null)
         {
@@ -56,6 +59,14 @@ public class Player : MonoBehaviour
         if (cam != null)
         {
             cam.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "die")
+        {
+            gameManager.Die();
         }
     }
 }
