@@ -69,8 +69,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpInterval: 2
-  jumpPower: 15
-  moveSpeed: 10
+  jumpPower: 10
+  moveSpeed: 6
   targetPlayer: {fileID: 0}
 --- !u!54 &7383571604731415118
 Rigidbody:
