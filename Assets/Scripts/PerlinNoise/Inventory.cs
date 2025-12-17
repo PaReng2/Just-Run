@@ -13,7 +13,8 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         ui = FindAnyObjectByType<InventoryUi>();   
-        gameManager = FindAnyObjectByType<GameManager>();
+        if(gameManager == null )
+            gameManager = FindAnyObjectByType<GameManager>();
     }
     public int GetCount(ItemType id)
     {

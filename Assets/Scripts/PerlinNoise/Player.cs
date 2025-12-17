@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,6 +9,7 @@ public class Player : MonoBehaviour
     public float jumpPower = 5f;
     public float gravity = -9.81f;
     public float mouseSensitivity = 3f;
+    public TextMeshProUGUI isKey;
 
     GameManager gameManager;
 
@@ -29,6 +31,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         HandleMove();
+        isKey.text = $"is Have Key : {gameManager.isHaveKey}";
         HandleLook();
     }
 
