@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
-  maxHp: 5
+  maxHp: 9
   icon: {fileID: 0}
   hp: 0
   dropCount: 1
